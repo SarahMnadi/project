@@ -1,12 +1,39 @@
 <?php
 	include("../session.php");
-	if(!isset($_SESSION["UID"])){
-		header("location:../home.php");
-	}
+  if(!isset($_SESSION["UID"])){
+    header("location:../home.php");
+  }
 	include("../config.php");
-	$query = "select * from users";
-	$result = mysqli_query($connection, $query);
+	if(isset($_POST["submit"])){
+		$bcode = $_POST["bcode"];
+		$title = $_POST["title"];
+		$author = $_POST["author"];
+		$publisher = $_POST["publisher"];
+		$edition = $_POST["edition"];
+		$price = $_POST["price"];
+		$copies = $_POST["copies"];
+
+		$db1 = "select B_Code from book where B_Code = '$bcode'";
+		$result1 = mysqli_query($connection, $db1);
+		$row = mysqli_num_rows($result1);
+
+		if($row > 0){
+			echo "Book is present";
+		}else{
+			$db = "INSERT INTO book(`B_Code`, `Title`, `Author`, `Edition`, `Publisher`, `Price`, `Copies`,`available`) VALUES ('$bcode','$title','$author','$publisher','$edition','$price','$copies','$copies')";
+			$result = mysqli_query($connection, $db);
+			if($result){
+			echo "<script>alert('Book added')</script>";
+			}
+		}
+	
+	}	
+
 ?>
+
+		  
+
+        
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,7 +49,7 @@
     <meta property="og:url" content="http://pratikborsadiya.in/blog/vali-admin">
     <meta property="og:image" content="http://pratikborsadiya.in/blog/vali-admin/hero-social.png">
     <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
-    <title>Admin View Users</title>
+    <title>Admin Add Books</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -124,48 +151,46 @@
       }
     </script>
 
-		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>
-<div class="sarah" style="float:right">
-						<div class="table-responsive">
-					<table class="table table-bordered table-hover">
-						<tr>
-							<th>First Name</th>
-							<th>Last Name</th>
-							<th>Gender</th>
-							<th>User Type</th>
-							<th>Phone Number</th>
-							<th>E-mail</th>
-							<th>Address</th>
-							<th>Date Registered</th>
-							<th>Update</th>
-							<th>Delete</th>
-						</tr>
-						<?php
-						while($row = mysqli_fetch_assoc($result)){
-						?>
-						<tr>
-							<td><?php echo $row["F_name"]; ?></td>
-							<td><?php echo $row["L_name"]; ?></td>
-							<td><?php echo $row["Gender"]; ?></td>
-							<td><?php echo $row["User_type"]; ?></td>
-							<td><?php echo $row["Phone"]; ?></td>
-							<td><?php echo $row["Email"]; ?></td>
-							<td><?php echo $row["Address"]; ?></td>
-							<td><?php echo $row["date_registered"]; ?></td>
-							<td><a href="adminupdate.php?U_ID=<?php echo $row['U_ID']; ?>">Update User</a></td>
-              				<td><a href="admindelete.php?U_ID=<?php echo $row['U_ID']; ?>">Delete User</a></td>
-						</tr>
-						<?php
-						}
-						?>
-					</table>
-					</div>
+		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>  
+
+		<div class="sarah" style="margin-left: 350px; width: 860px">
+      <h5 style="text-align: center;">Add Books</h5>
+					<form action="addbooksadmin.php" method="post">
+						  <div class="form-group">
+						    <label>Book Code</label>
+						    <input type="text" class="form-control" required name="bcode" placeholder="Enter book ISBN">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Title</label>
+						    <input type="text" class="form-control" required name="title"placeholder="Enter book title">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Author</label>
+						    <input type="text" class="form-control" required name="author" placeholder="Enter author of the book">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Publisher</label>
+						    <input type="text" class="form-control" required name="publisher" placeholder="Enter publisher of book">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Edition</label>
+						    <input type="text" class="form-control" required name="edition"placeholder="Enter book edition">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Price</label>
+						    <input type="text" class="form-control" required name="price" placeholder="Enter price for borrowing a book">
+						  </div>
+						  <div class="form-group">
+						    <label>Number of Copies</label>
+						    <input type="number" class="form-control" required name="copies" min="1" placeholder="Enter number of books in the library">
+						  </div>
+						  <button type="submit" class="btn btn-primary" name="submit">Add Book</button>
+						  <button type="reset" class="btn btn-primary" >Reset</button>
+					</form>
 				</div>
 			</div>
 			</div>
-			</div>
-			<!-- End of row 2 -->
-					
+		</div>
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
@@ -180,8 +205,8 @@
     <aside>
         <ul>
             	<li><a class="treeview-item" href="addbooksadmin.php"><i class="icon fa fa-circle-o">Add Books</a></li>
-              <li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>
-							<li><a class="treeview-item" href="addcustomeradmin.php"><i class="icon fa fa-circle-o">Add Customers</a></li>
+							<li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>
+							<li><a class="treeview-item" href="addcustomers.php"><i class="icon fa fa-circle-o">Add Customers</a></li>
 							<li><a class="treeview-item" href="adminbooks.php"><i class="icon fa fa-circle-o">View Books</a></li>
 							<li><a class="treeview-item"href="adminissue.php"><i class="icon fa fa-circle-o">Issue Books</a></li>
 							<li><a class="treeview-item"href="adminviewissue.php"><i class="icon fa fa-circle-o">View Issued Books</a></li>

@@ -1,12 +1,41 @@
 <?php
 	include("../session.php");
 	if(!isset($_SESSION["UID"])){
-		header("location:../home.php");
+		header("location: ../home.php");
 	}
-	include("../config.php");
-	$query = "select * from users";
-	$result = mysqli_query($connection, $query);
+ 	include("../config.php");
+	if(isset($_POST["submit"])){
+		$librarian = $_POST["librarian"];
+		$fname = $_POST["fname"];
+		$lname = $_POST["lname"];
+		$gridRadios = $_POST["gridRadios"];
+		$phone = $_POST["phone"];
+		$email= $_POST["email"];
+		$address= $_POST["address"];
+		$usertype = "Librarian";
+		$password = SHA1($_POST["password"]);
+
+		$db1 = "select U_ID  from users where U_ID = '$librarian'";
+		$result1 = mysqli_query($connection, $db1);
+		$row = mysqli_num_rows($result1);
+
+		if($row > 0){
+			echo "User ID is present";
+		}else{
+			$db = "INSERT INTO users(U_ID, F_name, L_name, Gender, Email, Phone, Address, User_type, Password, date_registered) 
+					values('$librarian', '$fname', '$lname', '$gridRadios', '$email', '$phone', '$address', '$usertype', '$password', Now())";
+			$result = mysqli_query($connection, $db);
+			if($result){
+			echo "<script>alert('Librarian added')</script>";
+			}else{
+				echo "error ".mysqli_error($connection);
+			}
+		}
+	
+	}	
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,7 +51,7 @@
     <meta property="og:url" content="http://pratikborsadiya.in/blog/vali-admin">
     <meta property="og:image" content="http://pratikborsadiya.in/blog/vali-admin/hero-social.png">
     <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
-    <title>Admin View Users</title>
+    <title>Admin Add Librarian</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -124,48 +153,83 @@
       }
     </script>
 
-		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>
-<div class="sarah" style="float:right">
-						<div class="table-responsive">
-					<table class="table table-bordered table-hover">
-						<tr>
-							<th>First Name</th>
-							<th>Last Name</th>
-							<th>Gender</th>
-							<th>User Type</th>
-							<th>Phone Number</th>
-							<th>E-mail</th>
-							<th>Address</th>
-							<th>Date Registered</th>
-							<th>Update</th>
-							<th>Delete</th>
-						</tr>
-						<?php
-						while($row = mysqli_fetch_assoc($result)){
-						?>
-						<tr>
-							<td><?php echo $row["F_name"]; ?></td>
-							<td><?php echo $row["L_name"]; ?></td>
-							<td><?php echo $row["Gender"]; ?></td>
-							<td><?php echo $row["User_type"]; ?></td>
-							<td><?php echo $row["Phone"]; ?></td>
-							<td><?php echo $row["Email"]; ?></td>
-							<td><?php echo $row["Address"]; ?></td>
-							<td><?php echo $row["date_registered"]; ?></td>
-							<td><a href="adminupdate.php?U_ID=<?php echo $row['U_ID']; ?>">Update User</a></td>
-              				<td><a href="admindelete.php?U_ID=<?php echo $row['U_ID']; ?>">Delete User</a></td>
-						</tr>
-						<?php
-						}
-						?>
-					</table>
-					</div>
+		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>  
+
+
+			<div class="sarah" style="margin-left: 350px; width: 860px">
+        <h5 style="text-align: center">Add Librarian</h5>
+					<form action ="addlibrarian.php" method="post">
+    						<div class="form-group row">
+                 <label for="inputEmail3" class="col-sm-2 col-form-label">User ID</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" required name="librarian" placeholder="Enter librarian ID">
+                </div>
+              </div>
+             <div class="form-group row">
+                 <label for="inputEmail3" class="col-sm-2 col-form-label">First Name</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" required name="fname" placeholder="Enter librarian first name">
+                </div>
+              </div>
+              <div class="form-group row">
+              <label for="inputPassword3" class="col-sm-2 col-form-label">Last Name</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" required name="lname" placeholder="Enter librarian last name">
+              </div>
+              </div>
+              <div class="row">
+                <label class="col-form-label col-sm-2 pt-0">Gender</label>
+                <div class="col-sm-10">
+                  <div class="form-check">
+                    <input class="form-check-input" value="Male" type="radio" name="gridRadios">
+                    <label class="form-check-label" valuefor="gridRadios1">
+                      Male
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="Female" name="gridRadios">
+                    <label class="form-check-label" for="gridRadios2">
+                      Female
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">Phone Number</label>
+               <div class="col-sm-10">
+               <input type="text" class="form-control" name="phone" placeholder="Enter librarian phone number">
+               </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">E-mail</label>
+                <div class="col-sm-10">
+               <input type="text" class="form-control" name="email" placeholder="Enter librarian email address">
+              </div>
+                </div>
+              <div class="form-group row">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+                <div class="col-sm-10">
+               <input type="password" class="form-control" name="password" placeholder="Enter librarian password">
+              </div>
+                </div>
+                <div class="form-group row">
+               <label for="inputPassword3" class="col-sm-2 col-form-label">Address</label>
+               <div class="col-sm-10">
+               <input type="text" class="form-control" name="address" placeholder="Enter librarian physical address">
+               </div>
+           </div>
+            <div class="form-group row">
+              <div class="col-sm-10">
+                <button type="submit" class="btn btn-primary" name="submit">Add Librarian</button>
+					    </div>
+					  </div>
+				</form>
 				</div>
 			</div>
 			</div>
 			</div>
-			<!-- End of row 2 -->
-					
+		</div>
+		
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
@@ -180,7 +244,7 @@
     <aside>
         <ul>
             	<li><a class="treeview-item" href="addbooksadmin.php"><i class="icon fa fa-circle-o">Add Books</a></li>
-              <li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>
+							<li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>
 							<li><a class="treeview-item" href="addcustomeradmin.php"><i class="icon fa fa-circle-o">Add Customers</a></li>
 							<li><a class="treeview-item" href="adminbooks.php"><i class="icon fa fa-circle-o">View Books</a></li>
 							<li><a class="treeview-item"href="adminissue.php"><i class="icon fa fa-circle-o">Issue Books</a></li>

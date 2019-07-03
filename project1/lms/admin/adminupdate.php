@@ -1,12 +1,13 @@
 <?php
 	include("../session.php");
 	if(!isset($_SESSION["UID"])){
-		header("location:../home.php");
+		header("location: ../home.php");
 	}
 	include("../config.php");
 	$query = "select * from users";
 	$result = mysqli_query($connection, $query);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,7 +23,7 @@
     <meta property="og:url" content="http://pratikborsadiya.in/blog/vali-admin">
     <meta property="og:image" content="http://pratikborsadiya.in/blog/vali-admin/hero-social.png">
     <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
-    <title>Admin View Users</title>
+    <title>Admin Update Users</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -39,7 +40,7 @@
   <body class="app sidebar-mini rtl">
     <!-- Navbar-->
 
-    <header class="app-header"><a class="app-header__logo" href="index.html">Library management</a>
+    <header class="app-header"><a class="app-header__logo" href="#">Library management</a>
       <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>
       <!-- Navbar Right Menu-->
 		
@@ -124,48 +125,118 @@
       }
     </script>
 
-		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>
-<div class="sarah" style="float:right">
-						<div class="table-responsive">
-					<table class="table table-bordered table-hover">
-						<tr>
-							<th>First Name</th>
-							<th>Last Name</th>
-							<th>Gender</th>
-							<th>User Type</th>
-							<th>Phone Number</th>
-							<th>E-mail</th>
-							<th>Address</th>
-							<th>Date Registered</th>
-							<th>Update</th>
-							<th>Delete</th>
-						</tr>
-						<?php
-						while($row = mysqli_fetch_assoc($result)){
-						?>
-						<tr>
-							<td><?php echo $row["F_name"]; ?></td>
-							<td><?php echo $row["L_name"]; ?></td>
-							<td><?php echo $row["Gender"]; ?></td>
-							<td><?php echo $row["User_type"]; ?></td>
-							<td><?php echo $row["Phone"]; ?></td>
-							<td><?php echo $row["Email"]; ?></td>
-							<td><?php echo $row["Address"]; ?></td>
-							<td><?php echo $row["date_registered"]; ?></td>
-							<td><a href="adminupdate.php?U_ID=<?php echo $row['U_ID']; ?>">Update User</a></td>
-              				<td><a href="admindelete.php?U_ID=<?php echo $row['U_ID']; ?>">Delete User</a></td>
-						</tr>
-						<?php
-						}
-						?>
-					</table>
-					</div>
+		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>  
+
+      <div class="sarah" style="float:right">
+				<div class="col-md-10">
+					<?php
+						if(isset($_POST['submit'])){
+							$fname = $_POST["fname"];
+							$lname = $_POST["lname"];
+							$phone = $_POST["phone"];
+							$email= $_POST["email"];
+							$address= $_POST["address"];
+
+							$query_update ="update users set F_name = '$fname', L_name = '$lname', Phone = '$phone', Email = '$email', Address = '$address'  where U_ID = '" .$_POST['U_ID']. "'";
+         				    $result_update = mysqli_query($connection, $query_update);
+          					$query = "select * from users where U_ID = '" .$_POST['U_ID']. "'";
+         				    $result = mysqli_query($connection, $query);
+         					$row = mysqli_fetch_assoc($result);
+           					 echo '<p style="color: green; text-align: center; font-size: px">User information has been updated</p>';
+					?>
+					<h2>Update User</h2>
+					<form action ="adminupdate.php" method="post" style="margin-left: 350px; width: 960px">
+						<input type="hidden" name="U_ID" value="<?php echo $_POST['U_ID']; ?>">
+ 						 <div class="form-group row">
+					   		 <label for="inputEmail3" class="col-sm-2 col-form-label">First Name</label>
+					    	<div class="col-sm-10">
+					      	<input type="text" value="<?php echo $row["F_name"]; ?>" class="form-control" name="fname" placeholder="Enter customer first name">
+					    	</div>
+					  	</div>
+					  	<div class="form-group row">
+					    <label for="inputPassword3" class="col-sm-2 col-form-label">Last Name</label>
+					    <div class="col-sm-10">
+					      <input type="text" value="<?php echo $row["L_name"]; ?>" class="form-control" name="lname" placeholder="Enter customer last name">
+					    </div>
+					  	</div>
+					    <div class="form-group row">
+    						<label for="inputPassword3" class="col-sm-2 col-form-label">Phone Number</label>
+   						 <div class="col-sm-10">
+     					 <input type="text" value="<?php echo $row["Phone"]; ?>" class="form-control" name="phone" placeholder="Enter customer phone number">
+   						 </div>
+  						</div>
+  						<div class="form-group row">
+    						<label for="inputPassword3" class="col-sm-2 col-form-label">E-mail</label>
+    						<div class="col-sm-10">
+     					 <input type="text" value="<?php echo $row["Email"]; ?>" class="form-control" name="email"placeholder="Enter customer email address">
+    					</div>
+  							</div>
+  							<div class="form-group row">
+   						 <label for="inputPassword3" class="col-sm-2 col-form-label">Address</label>
+   						 <div class="col-sm-10">
+     					 <input type="text" value="<?php echo $row["Address"]; ?>" class="form-control" name="address" placeholder="Enter customer physical address">
+   						 </div>
+ 					 </div>
+					  <div class="form-group row">
+					    <div class="col-sm-10">
+					      <button type="submit" class="btn btn-primary" name="submit" id="y">Update User</button>
+					    </div>
+					  </div>
+				</form>
+				</div>
+
+				<?php
+				}else{
+					$query = "select * from users where U_ID = '" .$_GET['U_ID']. "'";
+          			$result = mysqli_query($connection, $query);
+          			$row = mysqli_fetch_assoc($result);
+				?>
+				<h2 style="text-align: center">Update User</h2>
+				<form action ="adminupdate.php" method="post" style="margin-left: 350px; width: 960px">
+ 						 <div class="form-group row">
+					   		 <label for="inputEmail3" class="col-sm-2 col-form-label">First Name</label>
+					    	<div class="col-sm-10">
+					    	<input type="hidden" name="U_ID" value="<?php echo $_GET['U_ID']; ?>">	
+					      	<input type="text" value="<?php echo $row["F_name"]; ?>" class="form-control" name="fname" placeholder="Enter customer first name">
+					    	</div>
+					  	</div>
+					  	<div class="form-group row">
+					    <label for="inputPassword3" class="col-sm-2 col-form-label">Last Name</label>
+					    <div class="col-sm-10">
+					      <input type="text" value="<?php echo $row["L_name"]; ?>" class="form-control" name="lname" placeholder="Enter customer last name">
+					    </div>
+					  	</div>
+					    <div class="form-group row">
+    						<label for="inputPassword3" class="col-sm-2 col-form-label">Phone Number</label>
+   						 <div class="col-sm-10">
+     					 <input type="text" value="<?php echo $row["Phone"]; ?>" class="form-control" name="phone" placeholder="Enter customer phone number">
+   						 </div>
+  						</div>
+  						<div class="form-group row">
+    						<label for="inputPassword3" class="col-sm-2 col-form-label">E-mail</label>
+    						<div class="col-sm-10">
+     					 <input type="text" value="<?php echo $row["Email"]; ?>" class="form-control" name="email"placeholder="Enter customer email address">
+    					</div>
+  							</div>
+  							<div class="form-group row">
+   						 <label for="inputPassword3" class="col-sm-2 col-form-label">Address</label>
+   						 <div class="col-sm-10">
+     					 <input type="text" value="<?php echo $row["Address"]; ?>" class="form-control" name="address" placeholder="Enter customer physical address">
+   						 </div>
+ 					 </div>
+					  <div class="form-group row">
+					    <div class="col-sm-10">
+					      <button type="submit" class="btn btn-primary" name="submit">Update User</button>
+					    </div>
+					  </div>
+				</form>
+				 <?php	
+				}
+				?>
 				</div>
 			</div>
-			</div>
-			</div>
-			<!-- End of row 2 -->
-					
+			<!-- End of row 2-->
+			
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
@@ -182,7 +253,7 @@
             	<li><a class="treeview-item" href="addbooksadmin.php"><i class="icon fa fa-circle-o">Add Books</a></li>
               <li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>
 							<li><a class="treeview-item" href="addcustomeradmin.php"><i class="icon fa fa-circle-o">Add Customers</a></li>
-							<li><a class="treeview-item" href="adminbooks.php"><i class="icon fa fa-circle-o">View Books</a></li>
+							<li><a class="treeview-item" href="booksadmin.php"><i class="icon fa fa-circle-o">View Books</a></li>
 							<li><a class="treeview-item"href="adminissue.php"><i class="icon fa fa-circle-o">Issue Books</a></li>
 							<li><a class="treeview-item"href="adminviewissue.php"><i class="icon fa fa-circle-o">View Issued Books</a></li>
 							<li><a class="treeview-item" href="viewusers.php"><i class="icon fa fa-circle-o">View Users</a></li>

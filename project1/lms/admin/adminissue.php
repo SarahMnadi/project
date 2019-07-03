@@ -1,12 +1,55 @@
 <?php
 	include("../session.php");
 	if(!isset($_SESSION["UID"])){
-		header("location:../home.php");
+		header("location: ../home.php");
 	}
 	include("../config.php");
-	$query = "select * from users";
-	$result = mysqli_query($connection, $query);
+	$query2 = "select * from book";
+	$result2 = mysqli_query($connection, $query2);
+
+	if(isset($_POST["send"])){
+		$book = $_POST["bcode"];
+		$client = $_POST["bissue"];
+		$return = $_POST["return"];
+		$status = "Unreturned";
+
+		$query = "select B_Code from book where B_Code = '$book'";
+		$result = mysqli_query($connection, $query);
+		$row = mysqli_fetch_assoc($result);
+
+		$query1 = "select U_ID from users where U_ID = '$client'";
+		$result1 = mysqli_query($connection, $query1);
+		$row1 = mysqli_fetch_assoc($result1);
+
+		$query9 = "select B_Code, U_ID, Issue_Status from book_issue where U_ID = '$client' AND B_Code = '$book' AND Issue_Status = 'Unreturned'";
+		$result9 = mysqli_query($connection, $query9);
+		$row9 = mysqli_num_rows($result9);
+
+		if($row9 > 0){
+			echo "Return the previous book";
+		}else{
+		$query3 = "select available from book where B_Code = '$book'";
+		$result3 = mysqli_query($connection, $query3);
+		$row3 = mysqli_fetch_assoc($result3);
+		if($row3["available"] != 0){
+		$available = $row3["available"] - 1;
+
+		$query4 ="update book set available = '$available' where B_Code = '$book'";
+		$result4 = mysqli_query($connection, $query4);
+
+		$query5 = "insert into book_issue(U_ID, B_Code, Date_Issued, Date_Return, Issue_Status) values('$client', '$book', NOW(), '$return', '$status')";
+		$result5 = mysqli_query($connection, $query5);
+		if($result5){
+			echo "<script>alert('Book issued')</script>";
+		}
+		}else{
+			echo "<script>alert('These Books are all issued')</script>";
+		}
+		}
+
+	}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,7 +65,7 @@
     <meta property="og:url" content="http://pratikborsadiya.in/blog/vali-admin">
     <meta property="og:image" content="http://pratikborsadiya.in/blog/vali-admin/hero-social.png">
     <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
-    <title>Admin View Users</title>
+    <title>Admin Issue Books</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -124,48 +167,43 @@
       }
     </script>
 
-		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>
-<div class="sarah" style="float:right">
-						<div class="table-responsive">
-					<table class="table table-bordered table-hover">
-						<tr>
-							<th>First Name</th>
-							<th>Last Name</th>
-							<th>Gender</th>
-							<th>User Type</th>
-							<th>Phone Number</th>
-							<th>E-mail</th>
-							<th>Address</th>
-							<th>Date Registered</th>
-							<th>Update</th>
-							<th>Delete</th>
-						</tr>
-						<?php
-						while($row = mysqli_fetch_assoc($result)){
-						?>
-						<tr>
-							<td><?php echo $row["F_name"]; ?></td>
-							<td><?php echo $row["L_name"]; ?></td>
-							<td><?php echo $row["Gender"]; ?></td>
-							<td><?php echo $row["User_type"]; ?></td>
-							<td><?php echo $row["Phone"]; ?></td>
-							<td><?php echo $row["Email"]; ?></td>
-							<td><?php echo $row["Address"]; ?></td>
-							<td><?php echo $row["date_registered"]; ?></td>
-							<td><a href="adminupdate.php?U_ID=<?php echo $row['U_ID']; ?>">Update User</a></td>
-              				<td><a href="admindelete.php?U_ID=<?php echo $row['U_ID']; ?>">Delete User</a></td>
-						</tr>
-						<?php
-						}
-						?>
-					</table>
-					</div>
-				</div>
+		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>  
+                
+				<div class="sarah" style="margin-left: 500px; width: 650px">
+				<div class="col-md-10">
+						<form action="adminissue.php" method="post">
+							<!-- <h1 class="issue">Issue a Book</h1> -->
+							<h4>Book</h4>
+						<select name="bcode" class="txt7">
+							<?php
+							while($row2 = mysqli_fetch_assoc($result2)){
+							?>
+								<option value="<?php echo $row2["B_Code"]; ?>"><?php echo "Book ISBN - ".$row2["B_Code"]; echo "&nbsp&nbsp&nbsp&nbsp"; echo "Book Title - ".$row2["Title"]; echo "&nbsp&nbsp&nbsp&nbsp"; echo "Book Author - ".$row2["Author"]; ?></option>
+							<?php		
+							}
+							?>
+						</select>
+
+							<h4>Customer</h4>
+						<select name="bissue" class="txt7">
+							<?php
+							$query = "select * from users where user_type = 'Client'";
+							$result = mysqli_query($connection, $query);
+							while($row = mysqli_fetch_assoc($result)){
+							?>
+								<option value="<?php echo $row["U_ID"]; ?>"><?php echo "Customer ID - ".$row["U_ID"]; echo "&nbsp&nbsp&nbsp&nbsp"; echo "Name - ".$row["F_name"]." ".$row["L_name"]; ?></option>
+
+							<?php		
+							}
+							?>
+						</select>
+						<h4>Return Date</h4>
+						<input type="date" min="2019-05-31" name="return" required><br><br>
+						<input type="submit" value="Issue Book" name="send" id="y" style="background-color:teal">
+           </form>
 			</div>
 			</div>
-			</div>
-			<!-- End of row 2 -->
-					
+			
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">

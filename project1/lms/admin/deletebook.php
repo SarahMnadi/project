@@ -1,12 +1,18 @@
 <?php
 	include("../session.php");
 	if(!isset($_SESSION["UID"])){
-		header("location:../home.php");
+		header("location: ../home.php");
 	}
 	include("../config.php");
-	$query = "select * from users";
-	$result = mysqli_query($connection, $query);
-?>
+	if (isset($_POST['submit'])) {
+		$query = "delete from book where B_Code = '" .$_POST['B_Code']. "'";
+		$result = mysqli_query($connection, $query);
+		header('refresh:0 url=adminbooks.php');
+		echo "Book has been deleted";
+	}else{
+		?>
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,7 +28,7 @@
     <meta property="og:url" content="http://pratikborsadiya.in/blog/vali-admin">
     <meta property="og:image" content="http://pratikborsadiya.in/blog/vali-admin/hero-social.png">
     <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
-    <title>Admin View Users</title>
+    <title>Admin Delete Books</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -39,7 +45,7 @@
   <body class="app sidebar-mini rtl">
     <!-- Navbar-->
 
-    <header class="app-header"><a class="app-header__logo" href="index.html">Library management</a>
+    <header class="app-header"><a class="app-header__logo" href="#">Library management</a>
       <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>
       <!-- Navbar Right Menu-->
 		
@@ -124,48 +130,26 @@
       }
     </script>
 
-		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>
-<div class="sarah" style="float:right">
-						<div class="table-responsive">
-					<table class="table table-bordered table-hover">
-						<tr>
-							<th>First Name</th>
-							<th>Last Name</th>
-							<th>Gender</th>
-							<th>User Type</th>
-							<th>Phone Number</th>
-							<th>E-mail</th>
-							<th>Address</th>
-							<th>Date Registered</th>
-							<th>Update</th>
-							<th>Delete</th>
-						</tr>
-						<?php
-						while($row = mysqli_fetch_assoc($result)){
-						?>
-						<tr>
-							<td><?php echo $row["F_name"]; ?></td>
-							<td><?php echo $row["L_name"]; ?></td>
-							<td><?php echo $row["Gender"]; ?></td>
-							<td><?php echo $row["User_type"]; ?></td>
-							<td><?php echo $row["Phone"]; ?></td>
-							<td><?php echo $row["Email"]; ?></td>
-							<td><?php echo $row["Address"]; ?></td>
-							<td><?php echo $row["date_registered"]; ?></td>
-							<td><a href="adminupdate.php?U_ID=<?php echo $row['U_ID']; ?>">Update User</a></td>
-              				<td><a href="admindelete.php?U_ID=<?php echo $row['U_ID']; ?>">Delete User</a></td>
-						</tr>
-						<?php
-						}
-						?>
-					</table>
-					</div>
-				</div>
+		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>  
+
+			<div class="sarah" style="width: 600px; margin-left: 520px">          
+		<center><p><b>Are you sure you want to delete this book?</b></p></center>
+		<form method="post" action="deletebook.php">
+        <div class="form-group">
+          <input type="hidden" name="B_Code" value="<?php echo $_GET['B_Code']; ?>" class="form-control">
+        </div>
+        <div class="form-group">
+          <center><input type="submit" name="submit" value="Yes" class="form-control" style="background-color:teal">
+          <input type="button" value="No" onclick="history.go(-1);" class="form-control"  style="background-color:teal"></center>
+        </div>
+      </form>
 			</div>
-			</div>
-			</div>
-			<!-- End of row 2 -->
-					
+			<?php
+			
+	}
+?>
+
+		
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
@@ -180,7 +164,7 @@
     <aside>
         <ul>
             	<li><a class="treeview-item" href="addbooksadmin.php"><i class="icon fa fa-circle-o">Add Books</a></li>
-              <li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>
+              <li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>  
 							<li><a class="treeview-item" href="addcustomeradmin.php"><i class="icon fa fa-circle-o">Add Customers</a></li>
 							<li><a class="treeview-item" href="adminbooks.php"><i class="icon fa fa-circle-o">View Books</a></li>
 							<li><a class="treeview-item"href="adminissue.php"><i class="icon fa fa-circle-o">Issue Books</a></li>
@@ -190,5 +174,5 @@
             </li>
 						</ul>
             </aside>
-	</body>
-</html> 
+						</body>
+						</html>

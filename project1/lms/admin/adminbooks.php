@@ -1,12 +1,14 @@
 <?php
 	include("../session.php");
 	if(!isset($_SESSION["UID"])){
-		header("location:../home.php");
+		header("location: ../home.php");
 	}
 	include("../config.php");
-	$query = "select * from users";
+	$query = "select * from book";
 	$result = mysqli_query($connection, $query);
 ?>
+		
+		
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,7 +24,7 @@
     <meta property="og:url" content="http://pratikborsadiya.in/blog/vali-admin">
     <meta property="og:image" content="http://pratikborsadiya.in/blog/vali-admin/hero-social.png">
     <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
-    <title>Admin View Users</title>
+    <title>Admin View Books</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -124,48 +126,47 @@
       }
     </script>
 
-		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>
-<div class="sarah" style="float:right">
-						<div class="table-responsive">
+		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>  
+		
+          <div class="sarah" style="float:right; width: 1100px">
+					<div class="table-responsive">
+          <h5 class="cap" id="you" style="margin-left:30px;padding:0px;text-align:center">THESE ARE ALL BOOKS REGISTERED IN OUR LIBRARY</h5>
 					<table class="table table-bordered table-hover">
 						<tr>
-							<th>First Name</th>
-							<th>Last Name</th>
-							<th>Gender</th>
-							<th>User Type</th>
-							<th>Phone Number</th>
-							<th>E-mail</th>
-							<th>Address</th>
-							<th>Date Registered</th>
+							<th>Book ISBN</th>
+							<th>Book Title</th>
+							<th>Book Author</th>
+							<th>Book Publisher</th>	
+							<th>Book Price</th>
+							<th>Total Copies</th>
+							<th>Available Copies</th>
 							<th>Update</th>
 							<th>Delete</th>
 						</tr>
-						<?php
-						while($row = mysqli_fetch_assoc($result)){
-						?>
 						<tr>
-							<td><?php echo $row["F_name"]; ?></td>
-							<td><?php echo $row["L_name"]; ?></td>
-							<td><?php echo $row["Gender"]; ?></td>
-							<td><?php echo $row["User_type"]; ?></td>
-							<td><?php echo $row["Phone"]; ?></td>
-							<td><?php echo $row["Email"]; ?></td>
-							<td><?php echo $row["Address"]; ?></td>
-							<td><?php echo $row["date_registered"]; ?></td>
-							<td><a href="adminupdate.php?U_ID=<?php echo $row['U_ID']; ?>">Update User</a></td>
-              				<td><a href="admindelete.php?U_ID=<?php echo $row['U_ID']; ?>">Delete User</a></td>
+					
+							<?php
+							while($row = mysqli_fetch_assoc($result)){
+							?>	
+							<td><?php echo $row["B_Code"]; ?></td>
+							<td><?php echo $row["Title"]; ?></td>
+							<td><?php echo $row["Author"]; ?></td>
+							<td><?php echo $row["Publisher"]; ?></td>
+							<td><?php echo $row["Price"]; ?></td>
+							<td><?php echo $row["Copies"]; ?></td>
+							<td><?php echo $row["available"] ?></td>
+							<td><a href="booksadmn.php?B_Code=<?php echo $row['B_Code']; ?>">Update Book</a></td>
+							<td><a href="deletebook.php?B_Code=<?php echo $row['B_Code']; ?>">Delete Book</a></td>
 						</tr>
 						<?php
 						}
-						?>
+						?>	
 					</table>
 					</div>
 				</div>
 			</div>
 			</div>
-			</div>
-			<!-- End of row 2 -->
-					
+			<!-- End -->
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
