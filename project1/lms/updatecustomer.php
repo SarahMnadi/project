@@ -3,37 +3,9 @@
 	if(!isset($_SESSION["UID"])){
 		header("location:home.php");
 	}
- 	include("config.php");
-	if(isset($_POST["submit"])){
-		$librarian = $_POST["librarian"];
-		$fname = $_POST["fname"];
-		$lname = $_POST["lname"];
-		$gridRadios = $_POST["gridRadios"];
-		$phone = $_POST["phone"];
-		$email= $_POST["email"];
-		$address= $_POST["address"];
-		$usertype = "Librarian";
-		$password = SHA1($_POST["password"]);
-
-		$db1 = "select U_ID  from users where U_ID = '$librarian'";
-		$result1 = mysqli_query($connection, $db1);
-		$row = mysqli_num_rows($result1);
-
-		if($row > 0){
-			echo "User ID is present";
-		}else{
-			$db = "INSERT INTO users(U_ID, F_name, L_name, Gender, Email, Phone, Address, User_type, Password, date_registered) 
-					values('$librarian', '$fname', '$lname', '$gridRadios', '$email', '$phone', '$address', '$usertype', '$password', Now())";
-			$result = mysqli_query($connection, $db);
-			if($result){
-			echo "Librarian added";
-			}else{
-				echo "error ".mysqli_error($connection);
-			}
-		}
-	
-	}	
-
+	include("config.php");
+	$query = "select * from users where user_type = 'client'";
+	$result = mysqli_query($connection, $query);
 ?>
 
 <!DOCTYPE html>
@@ -153,40 +125,117 @@
       }
     </script>
 
-		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>  
+		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>
 
+				<div class="col-md-10">
+					<h2>Update Customer</h2>
+					<?php
+						if(isset($_POST['submit'])){
+							$fname = $_POST["fname"];
+							$lname = $_POST["lname"];
+							$phone = $_POST["phone"];
+							$email= $_POST["email"];
+							$address= $_POST["address"];
 
-			<div class="sarah" style="float:left">
-					<form action ="addlibrarian.php" method="post">
+							$query_update ="update users set F_name = '$fname', L_name = '$lname', Phone = '$phone', Email = '$email', Address = '$address'  where U_ID = '" .$_POST['U_ID']. "'";
+         				    $result_update = mysqli_query($connection, $query_update);
+          					$query = "select * from users where U_ID = '" .$_POST['U_ID']. "'";
+         				    $result = mysqli_query($connection, $query);
+         					$row = mysqli_fetch_assoc($result);
+           					 echo '<p style="color: green; text-align: center; font-size: px">User information has been updated</p>';
+					?>
+					<form action ="updatecustomer.php" method="post">
+						<input type="hidden" name="U_ID" value="<?php echo $_POST['U_ID']; ?>">
+ 						 <div class="form-group row">
+					   		 <label for="inputEmail3" class="col-sm-2 col-form-label">First Name</label>
+					    	<div class="col-sm-10">
+					      	<input type="text" value="<?php echo $row["F_name"]; ?>" class="form-control" name="fname" placeholder="Enter customer first name">
+					    	</div>
+					  	</div>
+					  	<div class="form-group row">
+					    <label for="inputPassword3" class="col-sm-2 col-form-label">Last Name</label>
+					    <div class="col-sm-10">
+					      <input type="text" value="<?php echo $row["L_name"]; ?>" class="form-control" name="lname" placeholder="Enter customer last name">
+					    </div>
+					  	</div>
+					    <div class="form-group row">
     						<label for="inputPassword3" class="col-sm-2 col-form-label">Phone Number</label>
    						 <div class="col-sm-10">
-     					 <input type="text" class="form-control" name="phone" placeholder="Enter customer phone number">
+     					 <input type="text" value="<?php echo $row["Phone"]; ?>" class="form-control" name="phone" placeholder="Enter customer phone number">
    						 </div>
   						</div>
   						<div class="form-group row">
     						<label for="inputPassword3" class="col-sm-2 col-form-label">E-mail</label>
     						<div class="col-sm-10">
-     					 <input type="text" class="form-control" name="email"placeholder="Enter customer email address">
+     					 <input type="text" value="<?php echo $row["Email"]; ?>" class="form-control" name="email"placeholder="Enter customer email address">
     					</div>
   							</div>
   							<div class="form-group row">
    						 <label for="inputPassword3" class="col-sm-2 col-form-label">Address</label>
    						 <div class="col-sm-10">
-     					 <input type="text" class="form-control" name="address" placeholder="Enter customer physical address">
+     					 <input type="text" value="<?php echo $row["Address"]; ?>" class="form-control" name="address" placeholder="Enter customer physical address">
    						 </div>
  					 </div>
 					  <div class="form-group row">
 					    <div class="col-sm-10">
-					      <button type="submit" class="btn btn-primary" name="submit" id="y"  style="background-color:teal">Add Librarian</button>
+					      <button type="submit" class="btn btn-primary" name="submit">Update Customer</button>
+					    </div>
+					  </div>
+				</form>
+				<?php
+				}else{
+					$query = "select * from users where U_ID = '" .$_GET['U_ID']. "' AND user_type = 'client'";
+          			$result = mysqli_query($connection, $query);
+          			$row = mysqli_fetch_assoc($result);
+				?>
+				<div class="sarah" style="float:right">
+				<form action ="updatecustomer.php" method="post">
+ 						 <div class="form-group row">
+					   		 <label for="inputEmail3" class="col-sm-2 col-form-label">First Name</label>
+					    	<div class="col-sm-10">
+					    	<input type="hidden" name="U_ID" value="<?php echo $_GET['U_ID']; ?>">	
+					      	<input type="text" value="<?php echo $row["F_name"]; ?>" class="form-control" name="fname" placeholder="Enter customer first name">
+					    	</div>
+					  	</div>
+					  	<div class="form-group row">
+					    <label for="inputPassword3" class="col-sm-2 col-form-label">Last Name</label>
+					    <div class="col-sm-10">
+					      <input type="text" value="<?php echo $row["L_name"]; ?>" class="form-control" name="lname" placeholder="Enter customer last name">
+					    </div>
+					  	</div>
+					    <div class="form-group row">
+    						<label for="inputPassword3" class="col-sm-2 col-form-label">Phone Number</label>
+   						 <div class="col-sm-10">
+     					 <input type="text" value="<?php echo $row["Phone"]; ?>" class="form-control" name="phone" placeholder="Enter customer phone number">
+   						 </div>
+  						</div>
+  						<div class="form-group row">
+    						<label for="inputPassword3" class="col-sm-2 col-form-label">E-mail</label>
+    						<div class="col-sm-10">
+     					 <input type="text" value="<?php echo $row["Email"]; ?>" class="form-control" name="email"placeholder="Enter customer email address">
+    					</div>
+  							</div>
+  							<div class="form-group row">
+   						 <label for="inputPassword3" class="col-sm-2 col-form-label">Address</label>
+   						 <div class="col-sm-10">
+     					 <input type="text" value="<?php echo $row["Address"]; ?>" class="form-control" name="address" placeholder="Enter customer physical address">
+   						 </div>
+ 					 </div>
+					  <div class="form-group row">
+					    <div class="col-sm-10">
+					      <button type="submit" class="btn btn-primary" name="submit">Update Customer</button>
 					    </div>
 					  </div>
 				</form>
 				</div>
+				
+				 <?php	
+				}
+				?>
+				</div>
 			</div>
-			</div>
-			</div>
-		</div>
-		
+			<!-- End of row 2-->
+			
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
@@ -201,7 +250,6 @@
     <aside>
         <ul>
             	<li><a class="treeview-item" href="addbooks.php"><i class="icon fa fa-circle-o">Add Books</a></li>
-							<li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>
 							<li><a class="treeview-item" href="addcustomeradmin.php"><i class="icon fa fa-circle-o">Add Customers</a></li>
 							<li><a class="treeview-item" href="viewbooks.php"><i class="icon fa fa-circle-o">View Books</a></li>
 							<li><a class="treeview-item"href="issuebook.php"><i class="icon fa fa-circle-o">Issue Books</a></li>

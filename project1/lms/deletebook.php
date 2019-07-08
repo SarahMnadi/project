@@ -1,40 +1,19 @@
+
+
 <?php
 	include("session.php");
 	if(!isset($_SESSION["UID"])){
 		header("location:home.php");
 	}
- 	include("config.php");
-	if(isset($_POST["submit"])){
-		$librarian = $_POST["librarian"];
-		$fname = $_POST["fname"];
-		$lname = $_POST["lname"];
-		$gridRadios = $_POST["gridRadios"];
-		$phone = $_POST["phone"];
-		$email= $_POST["email"];
-		$address= $_POST["address"];
-		$usertype = "Librarian";
-		$password = SHA1($_POST["password"]);
+	include("config.php");
+	if (isset($_POST['submit'])) {
+		$query = "delete from book where B_Code = '" .$_POST['B_Code']. "'";
+		$result = mysqli_query($connection, $query);
+		header('refresh:0 url=adminbooks.php');
+		echo "Book has been deleted";
+	}else{
+		?>
 
-		$db1 = "select U_ID  from users where U_ID = '$librarian'";
-		$result1 = mysqli_query($connection, $db1);
-		$row = mysqli_num_rows($result1);
-
-		if($row > 0){
-			echo "User ID is present";
-		}else{
-			$db = "INSERT INTO users(U_ID, F_name, L_name, Gender, Email, Phone, Address, User_type, Password, date_registered) 
-					values('$librarian', '$fname', '$lname', '$gridRadios', '$email', '$phone', '$address', '$usertype', '$password', Now())";
-			$result = mysqli_query($connection, $db);
-			if($result){
-			echo "Librarian added";
-			}else{
-				echo "error ".mysqli_error($connection);
-			}
-		}
-	
-	}	
-
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -155,37 +134,23 @@
 
 		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>  
 
+			<div class="sarah" style="float:right">          
+		<center><p><b>Are you sure you want to delete this book?</b></p></center>
+		<form method="post" action="deletebook.php">
+        <div class="form-group">
+          <input type="hidden" name="B_Code" value="<?php echo $_GET['B_Code']; ?>" class="form-control">
+        </div>
+        <div class="form-group">
+          <center><input type="submit" name="submit" value="Yes" class="form-control" style="background-color:teal">
+          <input type="button" value="No" onclick="history.go(-1);" class="form-control"  style="background-color:teal"></center>
+        </div>
+      </form>
+			</div>
+			<?php
+			
+	}
+?>
 
-			<div class="sarah" style="float:left">
-					<form action ="addlibrarian.php" method="post">
-    						<label for="inputPassword3" class="col-sm-2 col-form-label">Phone Number</label>
-   						 <div class="col-sm-10">
-     					 <input type="text" class="form-control" name="phone" placeholder="Enter customer phone number">
-   						 </div>
-  						</div>
-  						<div class="form-group row">
-    						<label for="inputPassword3" class="col-sm-2 col-form-label">E-mail</label>
-    						<div class="col-sm-10">
-     					 <input type="text" class="form-control" name="email"placeholder="Enter customer email address">
-    					</div>
-  							</div>
-  							<div class="form-group row">
-   						 <label for="inputPassword3" class="col-sm-2 col-form-label">Address</label>
-   						 <div class="col-sm-10">
-     					 <input type="text" class="form-control" name="address" placeholder="Enter customer physical address">
-   						 </div>
- 					 </div>
-					  <div class="form-group row">
-					    <div class="col-sm-10">
-					      <button type="submit" class="btn btn-primary" name="submit" id="y"  style="background-color:teal">Add Librarian</button>
-					    </div>
-					  </div>
-				</form>
-				</div>
-			</div>
-			</div>
-			</div>
-		</div>
 		
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
@@ -201,7 +166,6 @@
     <aside>
         <ul>
             	<li><a class="treeview-item" href="addbooks.php"><i class="icon fa fa-circle-o">Add Books</a></li>
-							<li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>
 							<li><a class="treeview-item" href="addcustomeradmin.php"><i class="icon fa fa-circle-o">Add Customers</a></li>
 							<li><a class="treeview-item" href="viewbooks.php"><i class="icon fa fa-circle-o">View Books</a></li>
 							<li><a class="treeview-item"href="issuebook.php"><i class="icon fa fa-circle-o">Issue Books</a></li>
@@ -211,5 +175,5 @@
             </li>
 						</ul>
             </aside>
-	</body>
-</html> 
+						</body>
+						</html>

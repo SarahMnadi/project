@@ -3,37 +3,9 @@
 	if(!isset($_SESSION["UID"])){
 		header("location:home.php");
 	}
- 	include("config.php");
-	if(isset($_POST["submit"])){
-		$librarian = $_POST["librarian"];
-		$fname = $_POST["fname"];
-		$lname = $_POST["lname"];
-		$gridRadios = $_POST["gridRadios"];
-		$phone = $_POST["phone"];
-		$email= $_POST["email"];
-		$address= $_POST["address"];
-		$usertype = "Librarian";
-		$password = SHA1($_POST["password"]);
-
-		$db1 = "select U_ID  from users where U_ID = '$librarian'";
-		$result1 = mysqli_query($connection, $db1);
-		$row = mysqli_num_rows($result1);
-
-		if($row > 0){
-			echo "User ID is present";
-		}else{
-			$db = "INSERT INTO users(U_ID, F_name, L_name, Gender, Email, Phone, Address, User_type, Password, date_registered) 
-					values('$librarian', '$fname', '$lname', '$gridRadios', '$email', '$phone', '$address', '$usertype', '$password', Now())";
-			$result = mysqli_query($connection, $db);
-			if($result){
-			echo "Librarian added";
-			}else{
-				echo "error ".mysqli_error($connection);
-			}
-		}
-	
-	}	
-
+	include("config.php");
+	$query = "select * from book, book_issue, users where book.B_Code = book_issue.B_Code AND book_issue.U_ID = users.U_ID ORDER BY Issue_Status desc";
+	$result = mysqli_query($connection, $query);
 ?>
 
 <!DOCTYPE html>
@@ -68,13 +40,13 @@
   <body class="app sidebar-mini rtl">
     <!-- Navbar-->
 
-    <header class="app-header"><a class="app-header__logo" href="index.html">Library management</a>
+    <header class="app-header"><a class="app-header__logo" href="viewbooks.php">Library management</a>
       <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>
       <!-- Navbar Right Menu-->
 		
       <ul class="app-nav">
         <li class="app-search">
-          <input class="app-search__input" type="search" placeholder="Search">
+          <input class="app-search__input" id="myInput" onkeyup="myFunction()" type="search" placeholder="Search by Book Title">
           <button class="app-search__button"><i class="fa fa-search"></i></button>
     </li>
 
@@ -153,47 +125,53 @@
       }
     </script>
 
-		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>  
-
-
-			<div class="sarah" style="float:left">
-					<form action ="addlibrarian.php" method="post">
-    						<label for="inputPassword3" class="col-sm-2 col-form-label">Phone Number</label>
-   						 <div class="col-sm-10">
-     					 <input type="text" class="form-control" name="phone" placeholder="Enter customer phone number">
-   						 </div>
-  						</div>
-  						<div class="form-group row">
-    						<label for="inputPassword3" class="col-sm-2 col-form-label">E-mail</label>
-    						<div class="col-sm-10">
-     					 <input type="text" class="form-control" name="email"placeholder="Enter customer email address">
-    					</div>
-  							</div>
-  							<div class="form-group row">
-   						 <label for="inputPassword3" class="col-sm-2 col-form-label">Address</label>
-   						 <div class="col-sm-10">
-     					 <input type="text" class="form-control" name="address" placeholder="Enter customer physical address">
-   						 </div>
- 					 </div>
-					  <div class="form-group row">
-					    <div class="col-sm-10">
-					      <button type="submit" class="btn btn-primary" name="submit" id="y"  style="background-color:teal">Add Librarian</button>
-					    </div>
-					  </div>
-				</form>
+		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome librarian to the system </p>
+                 
+				 <div class="sarah" style="float:right">
+					<div class="table-responsive">
+					<table id="myTable" class="table table-bordered table-hover" style="float: right;">
+						<caption class="capt" id="you">ISSUED BOOKS</caption>
+						<tr>
+							<th>Book ISBN</th>
+							<th>Book Title</th>
+							<th>Customer First Name</th>
+							<th>Customer Last Name</th>
+							<th>Date Issued</th>
+							<th>Date to Return</th>
+							<th>Status</th>
+							<th>Update Status</th>
+						</tr>
+						<tr>
+							<?php
+							while($row = mysqli_fetch_assoc($result)){
+							?>	
+							<td><?php echo $row["B_Code"]; ?></td>
+							<td><?php echo $row["Title"]; ?></td>
+							<td><?php echo $row["F_name"]; ?></td>
+							<td><?php echo $row["L_name"]; ?></td>
+							<td><?php echo $row["Date_Issued"]; ?></td>
+							<td><?php echo $row["Date_Return"]; ?></td>
+							<td><?php echo $row["Issue_Status"]; ?></td>
+							<td style="text-align: center;"><a href="update.php?id=<?php echo $row['U_ID']; ?>"><i class="glyphicon glyphicon-ok"></i></a></td>
+						</tr>
+						<?php
+						}
+						?>	
+					</table>
+					</div>
 				</div>
 			</div>
 			</div>
-			</div>
-		</div>
+			<!-- End of row 2 -->
 		
+			
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
       <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="image.jpg" alt="User Image" width="80px">
         <div>
         
-          <p class="app-sidebar__user-name">Admin</p>
+          <p class="app-sidebar__user-name">Librarian</p>
           <p class="app-sidebar__user-designation">UDSM Library</p>
         </div>
       </div>
@@ -201,7 +179,6 @@
     <aside>
         <ul>
             	<li><a class="treeview-item" href="addbooks.php"><i class="icon fa fa-circle-o">Add Books</a></li>
-							<li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>
 							<li><a class="treeview-item" href="addcustomeradmin.php"><i class="icon fa fa-circle-o">Add Customers</a></li>
 							<li><a class="treeview-item" href="viewbooks.php"><i class="icon fa fa-circle-o">View Books</a></li>
 							<li><a class="treeview-item"href="issuebook.php"><i class="icon fa fa-circle-o">Issue Books</a></li>
@@ -211,5 +188,28 @@
             </li>
 						</ul>
             </aside>
+          <script>
+function myFunction() {
+  // Declare variables 
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[1];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    } 
+  }
+}
+</script>
 	</body>
 </html> 

@@ -3,39 +3,10 @@
 	if(!isset($_SESSION["UID"])){
 		header("location:home.php");
 	}
- 	include("config.php");
-	if(isset($_POST["submit"])){
-		$librarian = $_POST["librarian"];
-		$fname = $_POST["fname"];
-		$lname = $_POST["lname"];
-		$gridRadios = $_POST["gridRadios"];
-		$phone = $_POST["phone"];
-		$email= $_POST["email"];
-		$address= $_POST["address"];
-		$usertype = "Librarian";
-		$password = SHA1($_POST["password"]);
-
-		$db1 = "select U_ID  from users where U_ID = '$librarian'";
-		$result1 = mysqli_query($connection, $db1);
-		$row = mysqli_num_rows($result1);
-
-		if($row > 0){
-			echo "User ID is present";
-		}else{
-			$db = "INSERT INTO users(U_ID, F_name, L_name, Gender, Email, Phone, Address, User_type, Password, date_registered) 
-					values('$librarian', '$fname', '$lname', '$gridRadios', '$email', '$phone', '$address', '$usertype', '$password', Now())";
-			$result = mysqli_query($connection, $db);
-			if($result){
-			echo "Librarian added";
-			}else{
-				echo "error ".mysqli_error($connection);
-			}
-		}
-	
-	}	
-
+	include("config.php");
+	$query = "select * from book where B_Code = ''";
+	$result = mysqli_query($connection, $query);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -153,41 +124,106 @@
       }
     </script>
 
-		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system </p>  
+		<p style="text-align:center;font-size:20px;margin-top:50px;color:black">welcome admin to the system 
+					<?php
+					if(isset($_POST["submit"])){
+						$bcode = $_POST["bcode"];
+						$title = $_POST["title"];
+						$author = $_POST["author"];
+						$publisher = $_POST["publisher"];
+						$edition = $_POST["edition"];
+						$price = $_POST["price"];
+						$copies = $_POST["copies"];
 
+						$query_update = "UPDATE book SET B_Code = '$bcode', Title = '$title', Author = '$author', Edition = '$edition', publisher = '$publisher', Price = '$price', Copies = '$copies' WHERE B_Code = '" .$_POST['B_Code']. "'";
+						$Result_update = mysqli_query($connection, $query_update);
+						$query = "select * from book where B_Code = '" .$_POST['B_Code']. "'";
+         				$result = mysqli_query($connection, $query);
+         				$row = mysqli_fetch_assoc($result);
+           				echo '<p style="color: green; text-align: center; font-size: px">Book information has been updated</p>';
+					?>
+					<form action="bookslb.php" method="post">
+						  <h2>Update Book</h2>
+						  <input type="hidden" name="U_ID" value="<?php echo $_POST['U_ID']; ?>">
+						  <div class="form-group">
+						    <label>Book Code</label>
+						    <input type="text" value="<?php echo $row["B_Code"]; ?>" class="form-control" required name="bcode" placeholder="Enter book ISBN">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Title</label>
+						    <input type="text" value="<?php echo $row["Title"]; ?>" class="form-control" required name="title"placeholder="Enter book title">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Author</label>
+						    <input type="text" value="<?php echo $row["Author"]; ?>" class="form-control" required name="author" placeholder="Enter author of the book">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Publisher</label>
+						    <input type="text" value="<?php echo $row["Edition"]; ?>" class="form-control" required name="publisher" placeholder="Enter publisher of book">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Edition</label>
+						    <input type="text" value="<?php echo $row["Publisher"]; ?>" class="form-control" required name="edition"placeholder="Enter book edition">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Price</label>
+						    <input type="text" value="<?php echo $row["Price"]; ?>" class="form-control" required name="price" placeholder="Enter price for borrowing a book">
+						  </div>
+						  <div class="form-group">
+						    <label>Number of Copies</label>
+						    <input type="number" value="<?php echo $row["Copies"]; ?>" class="form-control" required name="copies" min="1" placeholder="Enter number of books in the library">
+						  </div>
+						  <button type="submit" class="btn btn-primary" name="submit" id="y1">Update Book</button>
+					</form>
+					<?php
+				}else{
+					$query = "select * from book where B_Code = '" .$_GET['B_Code']. "'";
+          			$result = mysqli_query($connection, $query);
+          			$row = mysqli_fetch_assoc($result);
+				?>
+				<div class="sarah" style="float:right">
+					<form action="bookslb.php" method="post">
+						  <h2>Update Book</h2>
+						  <input type="hidden" name="B_Code" value="<?php echo $_GET['B_Code']; ?>">
+						  <div class="form-group">
+						    <label>Book Code</label>
+						    <input type="text" value="<?php echo $row["B_Code"]; ?>" class="form-control" required name="bcode" placeholder="Enter book ISBN">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Title</label>
+						    <input type="text" value="<?php echo $row["Title"]; ?>" class="form-control" required name="title"placeholder="Enter book title">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Author</label>
+						    <input type="text" value="<?php echo $row["Author"]; ?>" class="form-control" required name="author" placeholder="Enter author of the book">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Publisher</label>
+						    <input type="text" value="<?php echo $row["Edition"]; ?>" class="form-control" required name="publisher" placeholder="Enter publisher of book">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Edition</label>
+						    <input type="text" value="<?php echo $row["Publisher"]; ?>" class="form-control" required name="edition"placeholder="Enter book edition">
+						  </div>
+						  <div class="form-group">
+						    <label>Book Price</label>
+						    <input type="text" value="<?php echo $row["Price"]; ?>" class="form-control" required name="price" placeholder="Enter price for borrowing a book">
+						  </div>
+						  <div class="form-group">
+						    <label>Number of Copies</label>
+						    <input type="number" value="<?php echo $row["Copies"]; ?>" class="form-control" required name="copies" min="1" placeholder="Enter number of books in the library">
+						  </div>
+						  <button type="submit" class="btn btn-primary" name="submit">Update Book</button>
+					</form>
+					</div>
 
-			<div class="sarah" style="float:left">
-					<form action ="addlibrarian.php" method="post">
-    						<label for="inputPassword3" class="col-sm-2 col-form-label">Phone Number</label>
-   						 <div class="col-sm-10">
-     					 <input type="text" class="form-control" name="phone" placeholder="Enter customer phone number">
-   						 </div>
-  						</div>
-  						<div class="form-group row">
-    						<label for="inputPassword3" class="col-sm-2 col-form-label">E-mail</label>
-    						<div class="col-sm-10">
-     					 <input type="text" class="form-control" name="email"placeholder="Enter customer email address">
-    					</div>
-  							</div>
-  							<div class="form-group row">
-   						 <label for="inputPassword3" class="col-sm-2 col-form-label">Address</label>
-   						 <div class="col-sm-10">
-     					 <input type="text" class="form-control" name="address" placeholder="Enter customer physical address">
-   						 </div>
- 					 </div>
-					  <div class="form-group row">
-					    <div class="col-sm-10">
-					      <button type="submit" class="btn btn-primary" name="submit" id="y"  style="background-color:teal">Add Librarian</button>
-					    </div>
-					  </div>
-				</form>
+					<?php
+					}
+					?>
 				</div>
 			</div>
-			</div>
-			</div>
-		</div>
-		
-    <!-- Sidebar menu-->
+			<!-- End of row 2 -->
+		<!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
       <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="image.jpg" alt="User Image" width="80px">
@@ -201,7 +237,6 @@
     <aside>
         <ul>
             	<li><a class="treeview-item" href="addbooks.php"><i class="icon fa fa-circle-o">Add Books</a></li>
-							<li><a class="treeview-item" href="addlibrarian.php"><i class="icon fa fa-circle-o">Add Librarian</a></li>
 							<li><a class="treeview-item" href="addcustomeradmin.php"><i class="icon fa fa-circle-o">Add Customers</a></li>
 							<li><a class="treeview-item" href="viewbooks.php"><i class="icon fa fa-circle-o">View Books</a></li>
 							<li><a class="treeview-item"href="issuebook.php"><i class="icon fa fa-circle-o">Issue Books</a></li>
@@ -212,4 +247,4 @@
 						</ul>
             </aside>
 	</body>
-</html> 
+</html>
